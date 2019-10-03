@@ -36,14 +36,34 @@ function _ls () {
     IFS=$'\n'
     todos=$(grep $WORKSPACE/$TODAY -e "^- *" | sort -k 2)
     if [ $P_FLG ]; then
-        projects=$(grep $WORKSPACE/$TODAY -e "^- *" | awk '{ print $5 }' | sort | uniq )
-        # subprojects=$(grep $WORKSPACE/$TODAY -e "^- *" | awk '{ print $5 }' | sort | uniq )
-        for pro in $projects; do
-            echo "$pro"
-            for t in $todos; do
-                echo $t | grep -e "^-.*$pro"
-            done
+        prevParent=""
+        projects=$(grep $WORKSPACE/$TODAY -e "^- *" | awk '{ print $5 }' | sort | uniq)
+        for proj in $projects; do
+            if echo $proj | grep "\+" > /dev/null; then
+                parent=$(echo $proj | cut -d '+' -f 1)
+                sub=$(echo $proj | cut -d '+' -f 2)
+                if [ "$prevParent" == "" ]; then
+                    echo $parent
+                elif [ "$prevParent" != "$parent" ]; then
+                    echo $parent
+                fi
+                echo "  $sub"
+                for t in $todos; do
+                    if echo "$t" | grep -e "^-.*$parent+$sub" > /dev/null; then
+                        echo "    $t"
+                    fi
+                done
+                prevParent=$parent
+            else
+                echo $proj
+                for t in $todos; do
+                    if echo $t | grep -e "^-.*$proj" > /dev/null; then
+                        echo "  $t"
+                    fi
+                done
+            fi
         done
+
         return 0
     fi
 
