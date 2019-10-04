@@ -4,6 +4,7 @@ readonly BASE="$HOME/todo"
 readonly YEAR=$(date +"%Y")
 readonly TODAY=$(date +"%m-%d")
 readonly WORKSPACE=$BASE/$YEAR
+readonly PROJECT_ROW=4
 
 function _new () {
     latest=$(ls $WORKSPACE | head)
@@ -12,8 +13,8 @@ function _new () {
     fi
 
     if [ ! -e $WORKSPACE/$TODAY ]; then
-        if [ ! -e $LATEST ]; then
-            cat $WORKSPACE/$LATEST | grep -e "^- (" >> $WORKSPACE/$TODAY
+        if [ ! -e $latest ]; then
+            cat $WORKSPACE/$latest | grep -e "^- (" > $WORKSPACE/$TODAY
         else
             touch $WORKSPACE/$TODAY
         fi
@@ -34,10 +35,15 @@ function _open () {
 
 function _ls () {
     IFS=$'\n'
-    todos=$(grep $WORKSPACE/$TODAY -e "^- *" | sort -k 2)
+    if [ $A_FLG ]; then
+        # TODO: -ap
+        todos=$(cat $WORKSPACE/$TODAY | sort -k 2)
+    else
+        todos=$(grep $WORKSPACE/$TODAY -e "^- *" | sort -k 2)
+    fi
     if [ $P_FLG ]; then
         prevParent=""
-        projects=$(grep $WORKSPACE/$TODAY -e "^- *" | awk '{ print $5 }' | sort | uniq)
+        projects=$(grep $WORKSPACE/$TODAY -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
         for proj in $projects; do
             if echo $proj | grep "\+" > /dev/null; then
                 parent=$(echo $proj | cut -d '+' -f 1)
@@ -63,13 +69,11 @@ function _ls () {
                 done
             fi
         done
-
-        return 0
+    else
+        for t in $todos; do
+            echo $t
+        done
     fi
-
-    for t in $todos; do
-        echo $t
-    done
     return 0
 }
 
@@ -87,10 +91,13 @@ case $subcommand in
         _open
         ;;
     ls)
-        while getopts "p" OPT
+        while getopts "ap" OPT
         do
             case $OPT in
                 p) P_FLG=1
+                    ;;
+                a) A_FLG=1
+                    ;;
             esac
         done
         shift $(( $OPTIND - 1 ))
