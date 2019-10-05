@@ -7,19 +7,18 @@ readonly WORKSPACE=$BASE/$YEAR
 readonly PROJECT_ROW=4
 
 function _new () {
-    latest=$(ls $WORKSPACE | head)
-    if [ ! -e $WORKSPACE ]; then
-        mkdir -p $WORKSPACE
+    if [ ! -e "$WORKSPACE" ]; then
+        mkdir -p "$WORKSPACE"
     fi
 
-    if [ ! -e $WORKSPACE/$TODAY ]; then
-        if [ ! -e $latest ]; then
-            cat $WORKSPACE/$latest | grep -e "^- (" > $WORKSPACE/$TODAY
-        else
-            touch $WORKSPACE/$TODAY
+    latest=$(find "$WORKSPACE" -maxdepth 1 ! -wholename "$WORKSPACE" | sort -nr | head -n1)
+    if [ ! -e "$WORKSPACE/$TODAY" ]; then
+        touch "$WORKSPACE/$TODAY"
+        if [ -e "$latest" ]; then
+            grep -e "^- (" >> "$WORKSPACE/$TODAY" < "$latest"
         fi
     else
-        echo "Error! Already exit $TODAY."
+        echo "Error! Already exit $WORKSPACE/$TODAY"
     fi
     return 0
 }
@@ -29,29 +28,29 @@ function _add() {
 }
 
 function _open () {
-    nvim  $WORKSPACE/$TODAY
+    nvim  "$WORKSPACE/$TODAY"
     return 0
 }
 
 function _ls () {
     IFS=$'\n'
-    if [ $A_FLG ]; then
+    if [ "$A_FLG" ]; then
         # TODO: -ap
-        todos=$(cat $WORKSPACE/$TODAY | sort -k 2)
+        todos=$(sort -k 2 < "$WORKSPACE/$TODAY")
     else
-        todos=$(grep $WORKSPACE/$TODAY -e "^- *" | sort -k 2)
+        todos=$(grep "$WORKSPACE/$TODAY" -e "^- *" | sort -k 2)
     fi
-    if [ $P_FLG ]; then
+    if [ "$P_FLG" ]; then
         prevParent=""
-        projects=$(grep $WORKSPACE/$TODAY -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
+        projects=$(grep "$WORKSPACE/$TODAY" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
         for proj in $projects; do
-            if echo $proj | grep "\+" > /dev/null; then
-                parent=$(echo $proj | cut -d '+' -f 1)
-                sub=$(echo $proj | cut -d '+' -f 2)
+            if echo "$proj" | grep "\+" > /dev/null; then
+                parent=$(echo "$proj" | cut -d '+' -f 1)
+                sub=$(echo "$proj" | cut -d '+' -f 2)
                 if [ "$prevParent" == "" ]; then
-                    echo $parent
+                    echo "$parent"
                 elif [ "$prevParent" != "$parent" ]; then
-                    echo $parent
+                    echo "$parent"
                 fi
                 echo "  $sub"
                 for t in $todos; do
@@ -59,11 +58,11 @@ function _ls () {
                         echo "    $t"
                     fi
                 done
-                prevParent=$parent
+                prevParent="$parent"
             else
-                echo $proj
+                echo "$proj"
                 for t in $todos; do
-                    if echo $t | grep -e "^-.*$proj" > /dev/null; then
+                    if echo "$t" | grep -e "^-.*$proj" > /dev/null; then
                         echo "  $t"
                     fi
                 done
@@ -71,13 +70,13 @@ function _ls () {
         done
     else
         for t in $todos; do
-            echo $t
+            echo "$t"
         done
     fi
     return 0
 }
 
-subcommand=$1
+subcommand="$1"
 shift
 
 case $subcommand in
@@ -100,7 +99,7 @@ case $subcommand in
                     ;;
             esac
         done
-        shift $(( $OPTIND - 1 ))
+        shift $(( OPTIND - 1 ))
         _ls
         ;;
     *)

@@ -1,4 +1,4 @@
 ## Example
 ```
-- (C) 2019-10-03 todoの改良 +todo
+- (C) 2019-10-03 todo todoの改良
 ```
