@@ -58,15 +58,15 @@ function _ls () {
                         echo "    $t"
                     fi
                 done
-                prevParent="$parent"
             else
                 echo "$proj"
                 for t in $todos; do
-                    if echo "$t" | grep -e "^-.*$proj" > /dev/null; then
+                    if [ $(echo "$t" | grep -e "^- *" | awk '{ print $'${PROJECT_ROW}' }') == "$proj" ]; then
                         echo "  $t"
                     fi
                 done
             fi
+            prevParent="$proj"
         done
     else
         for t in $todos; do
