@@ -1,0 +1,17 @@
+language: bash
+
+env:
+  - SHUNIT_COLOR='always'
+
+script:
+  - make init
+  - make test
+
+os:
+  - linux
+  - osx
+
+addons:
+  apt:
+    packages:
+      - wget
