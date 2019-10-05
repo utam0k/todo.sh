@@ -61,7 +61,7 @@ function _ls () {
             else
                 echo "$proj"
                 for t in $todos; do
-                    if [ $(echo "$t" | grep -e "^- *" | awk '{ print $'${PROJECT_ROW}' }') == "$proj" ]; then
+                    if [ "$(echo "$t" | grep -e "^- *" | awk '{ print $'${PROJECT_ROW}' }')" == "$proj" ]; then
                         echo "  $t"
                     fi
                 done
@@ -76,32 +76,34 @@ function _ls () {
     return 0
 }
 
-subcommand="$1"
-shift
+if command [ "$#" -ge 1 ]; then
+    subcommand="$1"
+    shift
 
-case $subcommand in
-    new)
-        _new
-        ;;
-    add)
-        _add
-        ;;
-    open)
-        _open
-        ;;
-    ls)
-        while getopts "ap" OPT
-        do
-            case $OPT in
-                p) P_FLG=1
-                    ;;
-                a) A_FLG=1
-                    ;;
-            esac
-        done
-        shift $(( OPTIND - 1 ))
-        _ls
-        ;;
-    *)
-        echo "Unknown subcommand"
-esac
+    case $subcommand in
+        new)
+            _new
+            ;;
+        add)
+            _add
+            ;;
+        open)
+            _open
+            ;;
+        ls)
+            while getopts "ap" OPT
+            do
+                case $OPT in
+                    p) P_FLG=1
+                        ;;
+                    a) A_FLG=1
+                        ;;
+                esac
+            done
+            shift $(( OPTIND - 1 ))
+            _ls
+            ;;
+        *)
+            echo "Unknown subcommand"
+    esac
+fi
