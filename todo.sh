@@ -46,7 +46,7 @@ function _ls () {
         prevParent=""
         projects=$(grep "$WORKSPACE/$TODAY" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
         for proj in $projects; do
-            if include_subproject $proj > 0; then
+            if include_subproject "$proj" > 0; then
                 parent=$(echo "$proj" | cut -d '+' -f 1)
                 sub=$(echo "$proj" | cut -d '+' -f 2)
                 if [ "$prevParent" == "" ]; then
