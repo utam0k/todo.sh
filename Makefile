@@ -3,9 +3,8 @@
 init:
 	 wget https://raw.githubusercontent.com/kward/shunit2/master/shunit2 -O test/shunit2
 
-test:
-	./test/test.sh \ 
-	shellcheck *.sh
+test: concat
+	./test/test.sh
 
 concat:
 	./concat.sh
