@@ -11,7 +11,10 @@ os:
   - linux
   - osx
 
-addons:
-  apt:
-    packages:
-      - wget
+matrix:
+  include:
+    - os: linux
+      script:
+        - shellcheck *.sh
+    - os: linux
+      dist: trusty
