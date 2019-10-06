@@ -6,6 +6,8 @@ readonly TODAY=$(date +"%m-%d")
 readonly WORKSPACE=$BASE/$YEAR
 readonly PROJECT_ROW=4
 
+source common.sh
+
 function _new () {
     if [ ! -e "$WORKSPACE" ]; then
         mkdir -p "$WORKSPACE"
@@ -44,7 +46,7 @@ function _ls () {
         prevParent=""
         projects=$(grep "$WORKSPACE/$TODAY" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
         for proj in $projects; do
-            if echo "$proj" | grep "\+" > /dev/null; then
+            if include_subproject $proj > 0; then
                 parent=$(echo "$proj" | cut -d '+' -f 1)
                 sub=$(echo "$proj" | cut -d '+' -f 2)
                 if [ "$prevParent" == "" ]; then

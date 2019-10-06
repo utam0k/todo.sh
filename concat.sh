@@ -1,5 +1,5 @@
 #!/bin/bash
-readonly FILES=("test/test.sh")
+readonly FILES=("common.sh")
 
 lines=$(grep -n source todo.sh | cut -d : -f 1 | xargs echo | sed -e 's/ /,/g')
 if [ "$lines" ]; then
