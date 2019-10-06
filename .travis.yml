@@ -15,6 +15,6 @@ matrix:
   include:
     - os: linux
       script:
-        - shellcheck *.sh
+        - make check
     - os: linux
       dist: trusty

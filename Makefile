@@ -6,6 +6,9 @@ init:
 test: concat
 	./test/test.sh
 
+check:
+	git ls-files *.sh | xargs shellcheck
+
 concat:
 	./concat.sh
 
