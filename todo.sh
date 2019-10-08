@@ -26,6 +26,12 @@ function _new () {
 }
 
 function _add() {
+    if command [ "$#" -ne 3 ]; then
+        return 1
+    fi
+
+    # TODO: Define format function and tests.
+    echo "- ($1) $(date +"%Y-%m-%d") $2 $3" >> "$WORKSPACE/$TODAY"
     return 0
 }
 
@@ -87,7 +93,11 @@ if command [ "$#" -ge 1 ]; then
             _new
             ;;
         add)
-            _add
+            if command [ "$#" -eq 3 ]; then
+                _add $1 $2 $3
+            else
+                echo "add command needs 3 args."
+            fi
             ;;
         open)
             _open
