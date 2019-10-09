@@ -3,6 +3,9 @@
 init:
 	 wget https://raw.githubusercontent.com/kward/shunit2/master/shunit2 -O test/shunit2
 
+install: concat
+	cp tmp.sh /usr/local/bin/todo.sh
+
 test: concat
 	./test/test.sh
 
