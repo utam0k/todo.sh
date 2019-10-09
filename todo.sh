@@ -94,7 +94,7 @@ if command [ "$#" -ge 1 ]; then
             ;;
         add)
             if command [ "$#" -eq 3 ]; then
-                _add $1 $2 $3
+                _add "$1" "$2" "$3"
             else
                 echo "add command needs 3 args."
             fi

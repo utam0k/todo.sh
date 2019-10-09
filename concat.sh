@@ -1,5 +1,5 @@
 #!/bin/bash
-readonly FILES=("common.sh")
+# readonly FILES=("common.sh")
 
 lines=$(grep -n source todo.sh | cut -d : -f 1)
 if [ "$lines" ]; then
