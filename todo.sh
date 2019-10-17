@@ -39,6 +39,23 @@ function _add() {
     return 0
 }
 
+function _memo() {
+    todos=$(grep "$TARGET_FILE" -e "^- *" | sort -k 2)
+    SAVEIFS=$IF
+    IFS=$'\n'
+    todos=($todos)
+    IFS=$SAVEIFS
+    for (( i=0; i<${#todos[@]}; i++ ))
+    do
+        echo "$i: ${todos[$i]}"
+    done
+    read n
+
+    todoname=$(echo "${todos[$n]}" | awk '{print $5}')
+    nvim "$TARGET_FOLDER/$todoname.md"
+    return 0
+}
+
 function _open () {
     nvim  "$TARGET_FILE"
     return 0
@@ -105,6 +122,9 @@ if command [ "$#" -ge 1 ]; then
             ;;
         open)
             _open
+            ;;
+        memo)
+            _memo
             ;;
         ls)
             while getopts "ap" OPT
