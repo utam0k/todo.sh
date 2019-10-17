@@ -1,26 +1,30 @@
 #!/bin/bash
 
+set -e
+
 readonly BASE="$HOME/todo"
 readonly YEAR=$(date +"%Y")
-readonly TODAY=$(date +"%m-%d")
-readonly WORKSPACE=$BASE/$YEAR
+readonly MONTH=$(date +"%m")
+readonly DAY=$(date +"%d")
+readonly TARGET_FOLDER="$BASE/$YEAR/$MONTH/$DAY"
+readonly TARGET_FILE="$TARGET_FOLDER/todo.txt"
 readonly PROJECT_ROW=4
 
 source common.sh
 
 function _new () {
-    if [ ! -e "$WORKSPACE" ]; then
-        mkdir -p "$WORKSPACE"
+    if [ ! -e "$TARGET_FOLDER" ]; then
+        mkdir -p "$TARGET_FOLDER"
     fi
 
-    latest=$(find "$WORKSPACE" -maxdepth 1 ! -wholename "$WORKSPACE" | sort -nr | head -n1)
-    if [ ! -e "$WORKSPACE/$TODAY" ]; then
-        touch "$WORKSPACE/$TODAY"
-        if [ -e "$latest" ]; then
-            grep -e "^- (" >> "$WORKSPACE/$TODAY" < "$latest"
+    prev_target="$BASE/$(date -v -1d "+%Y/%m/%d")/todo.txt"
+    if [ ! -e "$TARGET_FILE" ]; then
+        touch "$TARGET_FILE"
+        if [ -e "$prev_target" ]; then
+            grep -e "^- (" >> "$TARGET_FILE" < "$prev_target"
         fi
     else
-        echo "Error! Already exit $WORKSPACE/$TODAY"
+        echo "Error! Already exit $TARGET_FILE"
     fi
     return 0
 }
@@ -31,12 +35,12 @@ function _add() {
     fi
 
     # TODO: Define format function and tests.
-    echo "- ($1) $(date +"%Y-%m-%d") $2 $3" >> "$WORKSPACE/$TODAY"
+    echo "- ($1) $(date +"%Y-%m-%d") $2 $3" >> "TARGET_FILE"
     return 0
 }
 
 function _open () {
-    nvim  "$WORKSPACE/$TODAY"
+    nvim  "$TARGET_FILE"
     return 0
 }
 
@@ -44,13 +48,13 @@ function _ls () {
     IFS=$'\n'
     if [ "$A_FLG" ]; then
         # TODO: -ap
-        todos=$(sort -k 2 < "$WORKSPACE/$TODAY")
+        todos=$(sort -k 2 < "$TARGET_FILE")
     else
-        todos=$(grep "$WORKSPACE/$TODAY" -e "^- *" | sort -k 2)
+        todos=$(grep "$TARGET_FILE" -e "^- *" | sort -k 2)
     fi
     if [ "$P_FLG" ]; then
         prevParent=""
-        projects=$(grep "$WORKSPACE/$TODAY" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
+        projects=$(grep "$TARGET_FILE" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
         for proj in $projects; do
             if include_subproject "$proj" > /dev/null; then
                 parent=$(echo "$proj" | cut -d '+' -f 1)
