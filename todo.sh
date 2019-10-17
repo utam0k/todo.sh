@@ -74,7 +74,7 @@ function _ls () {
                     fi
                 done
             fi
-            prevParent="$proj"
+            prevParent="$parent"
         done
     else
         for t in $todos; do
