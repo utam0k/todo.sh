@@ -112,9 +112,7 @@ if command [ "$#" -ge 1 ]; then
     shift
 
     case $subcommand in
-        new)
-            _new
-            ;;
+        new) _new ;;
         add)
             if command [ "$#" -eq 3 ]; then
                 _add "$1" "$2" "$3"
@@ -122,9 +120,7 @@ if command [ "$#" -ge 1 ]; then
                 echo "add command needs 3 args."
             fi
             ;;
-        open)
-            _open
-            ;;
+        open) _open ;;
         memo)
             if [ "$#" -ne 1 ]; then
                 _memo
@@ -145,7 +141,6 @@ if command [ "$#" -ge 1 ]; then
             shift $(( OPTIND - 1 ))
             _ls
             ;;
-        *)
-            echo "Unknown subcommand"
+        *) echo "Unknown subcommand" ;;
     esac
 fi
