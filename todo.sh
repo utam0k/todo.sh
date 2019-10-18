@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 readonly BASE="$HOME/todo"
 readonly YEAR=$(date +"%Y")
 readonly MONTH=$(date +"%m")
@@ -43,14 +41,14 @@ function _memo() {
     todos=$(grep "$TARGET_FILE" -e "^- *" | sort -k 2)
     SAVEIFS=$IF
     IFS=$'\n'
-    todos=($todos)
+    todos=( "$todos" )
     IFS=$SAVEIFS
     if [ "$#" -ne 1 ]; then
         for (( i=0; i<${#todos[@]}; i++ ))
         do
             echo "$i: ${todos[$i]}"
         done
-        read n
+        read -r n
     else
         n="$1"
     fi
@@ -103,7 +101,7 @@ function _ls () {
             prevParent="$parent"
         done
     else
-        todos=($todos)
+        todos=( "$todos" )
         IFS=$SAVEIFS
         for (( i=0; i<${#todos[@]}; i++ ))
         do
@@ -135,7 +133,7 @@ if command [ "$#" -ge 1 ]; then
             if [ "$#" -ne 1 ]; then
                 _memo
             else
-                _memo $1
+                _memo "$1"
             fi
             ;;
         ls)
