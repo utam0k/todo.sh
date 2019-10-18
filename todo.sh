@@ -38,16 +38,10 @@ function _add() {
 }
 
 function _memo() {
-    todos=$(grep "$TARGET_FILE" -e "^- *" | sort -k 2)
-    SAVEIFS=$IF
-    IFS=$'\n'
-    todos=( "$todos" )
-    IFS=$SAVEIFS
+    todos=()
+    while IFS='' read -r line; do todos+=("$line"); done < <(_ls)
     if [ "$#" -ne 1 ]; then
-        for (( i=0; i<${#todos[@]}; i++ ))
-        do
-            echo "$i: ${todos[$i]}"
-        done
+        _ls
         read -r n
     else
         n="$1"
@@ -64,18 +58,19 @@ function _open () {
 }
 
 function _ls () {
-    SAVEIFS=$IF
-    IFS=$'\n'
+    todos=()
     if [ "$A_FLG" ]; then
         # TODO: -ap
-        todos=$(sort -k 2 < "$TARGET_FILE")
+        while IFS='' read -r line; do todos+=("$line"); done < <(sort -k 2 < "$TARGET_FILE")
     else
-        todos=$(grep "$TARGET_FILE" -e "^- *" | sort -k 2)
+        while IFS='' read -r line; do todos+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | sort -k 2)
     fi
+
     if [ "$P_FLG" ]; then
         prevParent=""
-        projects=$(grep "$TARGET_FILE" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
-        for proj in $projects; do
+        projects=()
+        while IFS='' read -r line; do projects+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
+        for proj in "${projects[@]}"; do
             if include_subproject "$proj" > /dev/null; then
                 parent=$(echo "$proj" | cut -d '+' -f 1)
                 sub=$(echo "$proj" | cut -d '+' -f 2)
@@ -85,14 +80,14 @@ function _ls () {
                     echo "$parent"
                 fi
                 echo "  $sub"
-                for t in $todos; do
+                for t in "${todos[@]}"; do
                     if echo "$t" | grep -e "^-.*$parent+$sub" > /dev/null; then
                         echo "    $t"
                     fi
                 done
             else
                 echo "$proj"
-                for t in $todos; do
+                for t in "${todos[@]}"; do
                     if [ "$(echo "$t" | grep -e "^- *" | awk '{ print $'${PROJECT_ROW}' }')" == "$proj" ]; then
                         echo "  $t"
                     fi
@@ -101,10 +96,7 @@ function _ls () {
             prevParent="$parent"
         done
     else
-        todos=( "$todos" )
-        IFS=$SAVEIFS
-        for (( i=0; i<${#todos[@]}; i++ ))
-        do
+        for (( i=0; i<${#todos[@]}; i++ )) do
             echo "$i ${todos[$i]}"
         done
     fi
