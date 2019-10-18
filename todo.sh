@@ -15,7 +15,11 @@ function _new () {
         mkdir -p "$TARGET_FOLDER"
     fi
 
-    prev_target="$BASE/$(date -v -1d "+%Y/%m/%d")/todo.txt"
+    case "${OSTYPE}" in
+        freebsd*|darwin*) yesteday=$(date -v -1d "+%Y/%m/%d") ;;
+        linux*) yesteday=$(date --date '1 day ago' "+%Y/%m/%d")
+    esac
+    prev_target="$BASE/$yesteday/todo.txt"
     if [ ! -e "$TARGET_FILE" ]; then
         touch "$TARGET_FILE"
         if [ -e "$prev_target" ]; then
