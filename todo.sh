@@ -45,11 +45,15 @@ function _memo() {
     IFS=$'\n'
     todos=($todos)
     IFS=$SAVEIFS
-    for (( i=0; i<${#todos[@]}; i++ ))
-    do
-        echo "$i: ${todos[$i]}"
-    done
-    read n
+    if [ "$#" -ne 1 ]; then
+        for (( i=0; i<${#todos[@]}; i++ ))
+        do
+            echo "$i: ${todos[$i]}"
+        done
+        read n
+    else
+        n="$1"
+    fi
 
     todoname=$(echo "${todos[$n]}" | awk '{print $5}')
     nvim "$TARGET_FOLDER/$todoname.md"
@@ -62,6 +66,7 @@ function _open () {
 }
 
 function _ls () {
+    SAVEIFS=$IF
     IFS=$'\n'
     if [ "$A_FLG" ]; then
         # TODO: -ap
@@ -98,8 +103,11 @@ function _ls () {
             prevParent="$parent"
         done
     else
-        for t in $todos; do
-            echo "$t"
+        todos=($todos)
+        IFS=$SAVEIFS
+        for (( i=0; i<${#todos[@]}; i++ ))
+        do
+            echo "$i ${todos[$i]}"
         done
     fi
     return 0
@@ -124,7 +132,11 @@ if command [ "$#" -ge 1 ]; then
             _open
             ;;
         memo)
-            _memo
+            if [ "$#" -ne 1 ]; then
+                _memo
+            else
+                _memo $1
+            fi
             ;;
         ls)
             while getopts "ap" OPT
