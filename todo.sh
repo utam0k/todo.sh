@@ -17,6 +17,7 @@ source memo.sh
 source ls.sh
 
 # plugins
+# shellcheck disable=SC1091
 source tmp_plugins.sh
 
 if command [ "$#" -ge 1 ]; then
@@ -54,6 +55,7 @@ if command [ "$#" -ge 1 ]; then
             _ls
             ;;
         *)
+            # shellcheck disable=SC2154
             for p in $plugins; do
                 if [ "$subcommand" == "$p" ]; then
                     $subcommand

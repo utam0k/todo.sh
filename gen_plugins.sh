@@ -11,6 +11,6 @@ echo "plugins=()" >> "$PLUGINS_FILE"
 
 # generate plugins file.
 for p in $plugins; do
-    echo "plugins+=("$p")" >> "$PLUGINS_FILE"
+    echo "plugins+=($p)" >> "$PLUGINS_FILE"
     echo "source plugins/$p.sh" >> "$PLUGINS_FILE"
 done

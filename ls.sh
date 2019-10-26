@@ -12,7 +12,7 @@ function _ls () {
     if [ "$P_FLG" ]; then
         prevParent=""
         projects=()
-                    # shellcheck disable=SC2086
+        # shellcheck disable=SC2086
         while IFS='' read -r line; do projects+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
         for proj in "${projects[@]}"; do
             if include_subproject "$proj" > /dev/null; then
