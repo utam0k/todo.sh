@@ -1,10 +1,13 @@
 #!/bin/bash
 
 aleready_sourced=()
-case "${OSTYPE}" in
-    freebsd*|darwin*) sed_i_option="-i """ ;;
-    linux*) sed_i_option="-i" ;;
-esac
+
+shopt -s expand_aliases
+if sed --version 2>/dev/null | grep -q GNU; then
+  alias sedi='sed -i '
+else
+  alias sedi='sed -i "" '
+fi
 
 function replace () {
     target_lines=()
@@ -15,18 +18,20 @@ function replace () {
         line="${target_lines[0]}"
         n=$(echo "$line" | cut -d : -f 1)
         file=$(echo "$line" | cut -d : -f 2 | awk '{print $2}')
-        if [[ " ${aleready_sourced[@]} " =~ " ${file} " ]]; then
-            echo "[Warn] Already sourced $file." >&2
-            sed "$sed_i_option" -e "$(( n ))d" tmp.sh
-            replace
-            return 0
-        fi
+        for already_file in "${aleready_sourced[@]}"; do
+            if [[ "$already_file" = "$file" ]]; then
+                echo "[Warn] Already sourced $file." >&2
+                sedi -e "$(( n ))d" tmp.sh
+                replace
+                return 0
+            fi
+        done
 
         if [ ! -e "$file" ]; then
             echo "[Error!] Not found $file." >&2
             return 1
         fi
-        sed "$sed_i_option" -e "$(( n ))d" -e "$(( n - 1 ))r $file" tmp.sh
+        sedi -e "$(( n ))d" -e "$(( n - 1 ))r $file" tmp.sh
         aleready_sourced+=("$file")
         replace
     fi
