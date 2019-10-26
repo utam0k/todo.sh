@@ -12,7 +12,10 @@ test: concat
 check:
 	git ls-files *.sh | xargs shellcheck
 
-concat:
+plugin:
+	./gen_plugins.sh
+
+concat: plugin
 	./concat.sh
 
 clean:

@@ -8,12 +8,16 @@ readonly TARGET_FOLDER="$BASE/$YEAR/$MONTH/$DAY"
 readonly TARGET_FILE="$TARGET_FOLDER/todo.txt"
 readonly PROJECT_ROW=4
 
+# main subcommands
 source common.sh
 source new.sh
 source open.sh
 source add.sh
 source memo.sh
 source ls.sh
+
+# plugins
+source tmp_plugins.sh
 
 if command [ "$#" -ge 1 ]; then
     subcommand="$1"
@@ -49,6 +53,13 @@ if command [ "$#" -ge 1 ]; then
             shift $(( OPTIND - 1 ))
             _ls
             ;;
-        *) echo "Unknown subcommand" ;;
+        *)
+            for p in $plugins; do
+                if [ "$subcommand" == "$p" ]; then
+                    $subcommand
+                fi
+            done
+            echo "Unknown subcommand"
+            ;;
     esac
 fi
