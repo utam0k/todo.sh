@@ -9,104 +9,10 @@ readonly TARGET_FILE="$TARGET_FOLDER/todo.txt"
 readonly PROJECT_ROW=4
 
 source common.sh
-
-function _new () {
-    if [ -e "$TARGET_FILE" ]; then
-        echo "Error! Already exit $TARGET_FILE"
-        return 1
-    fi
-
-    latest_year=$(find "$BASE" -maxdepth 1 ! -wholename "$BASE" | sort -nr | head -n1)
-    latest_month=$(find "$latest_year" -maxdepth 1 ! -wholename "$latest_year" | sort -nr | head -n1)
-    latest_day=$(find "$latest_month" -maxdepth 1 ! -wholename "$latest_month" | sort -nr | head -n1)
-    prev_target="$latest_day/todo.txt"
-
-    if [ ! -e "$TARGET_FOLDER" ]; then
-        mkdir -p "$TARGET_FOLDER"
-    fi
-
-    touch "$TARGET_FILE"
-    if [ -e "$prev_target" ]; then
-        grep -e "^- (" >> "$TARGET_FILE" < "$prev_target"
-    fi
-    return 0
-}
-
-function _add() {
-    if command [ "$#" -ne 3 ]; then
-        return 1
-    fi
-
-    # TODO: Define format function and tests.
-    echo "- ($1) $(date +"%Y-%m-%d") $2 $3" >> "TARGET_FILE"
-    return 0
-}
-
-function _memo() {
-    todos=()
-    while IFS='' read -r line; do todos+=("$line"); done < <(_ls)
-    if [ "$#" -ne 1 ]; then
-        _ls
-        read -r n
-    else
-        n="$1"
-    fi
-
-    todoname=$(echo "${todos[$n]}" | awk '{print $5}')
-    nvim "$TARGET_FOLDER/$todoname.md"
-    return 0
-}
-
-function _open () {
-    nvim  "$TARGET_FILE"
-    return 0
-}
-
-function _ls () {
-    todos=()
-    if [ "$A_FLG" ]; then
-        # TODO: -ap
-        while IFS='' read -r line; do todos+=("$line"); done < <(sort -k 2 < "$TARGET_FILE")
-    else
-        while IFS='' read -r line; do todos+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | sort -k 2)
-    fi
-
-    if [ "$P_FLG" ]; then
-        prevParent=""
-        projects=()
-        while IFS='' read -r line; do projects+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
-        for proj in "${projects[@]}"; do
-            if include_subproject "$proj" > /dev/null; then
-                parent=$(echo "$proj" | cut -d '+' -f 1)
-                sub=$(echo "$proj" | cut -d '+' -f 2)
-                if [ "$prevParent" == "" ]; then
-                    echo "$parent"
-                elif [ "$prevParent" != "$parent" ]; then
-                    echo "$parent"
-                fi
-                echo "  $sub"
-                for t in "${todos[@]}"; do
-                    if echo "$t" | grep -e "^-.*$parent+$sub" > /dev/null; then
-                        echo "    $t"
-                    fi
-                done
-            else
-                echo "$proj"
-                for t in "${todos[@]}"; do
-                    if [ "$(echo "$t" | grep -e "^- *" | awk '{ print $'${PROJECT_ROW}' }')" == "$proj" ]; then
-                        echo "  $t"
-                    fi
-                done
-            fi
-            prevParent="$parent"
-        done
-    else
-        for (( i=0; i<${#todos[@]}; i++ )) do
-            echo "$i ${todos[$i]}"
-        done
-    fi
-    return 0
-}
+source new.sh
+source add.sh
+source memo.sh
+source ls.sh
 
 if command [ "$#" -ge 1 ]; then
     subcommand="$1"
