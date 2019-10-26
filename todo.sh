@@ -10,6 +10,7 @@ readonly PROJECT_ROW=4
 
 source common.sh
 source new.sh
+source open.sh
 source add.sh
 source memo.sh
 source ls.sh
