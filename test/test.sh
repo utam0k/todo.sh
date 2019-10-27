@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./tmp.sh
+source ./build/todo.sh
 
 # TODO
 # testAdd() {

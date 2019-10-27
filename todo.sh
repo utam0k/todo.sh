@@ -18,7 +18,7 @@ source ls.sh
 
 # plugins
 # shellcheck disable=SC1091
-source tmp_plugins.sh
+source build/plugins.sh
 
 if command [ "$#" -ge 1 ]; then
     subcommand="$1"
@@ -56,7 +56,7 @@ if command [ "$#" -ge 1 ]; then
             ;;
         *)
             # shellcheck disable=SC2154
-            for p in $plugins; do
+            for p in "${plugins[@]}"; do
                 if [ "$subcommand" == "$p" ]; then
                     $subcommand
                 fi

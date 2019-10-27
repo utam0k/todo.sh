@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly BUILD_FILE="tmp.sh"
+readonly BUILD_FILE="$1"
 already_sourced=()
 
 shopt -s expand_aliases

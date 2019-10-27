@@ -4,7 +4,7 @@ init:
 	 wget https://raw.githubusercontent.com/kward/shunit2/master/shunit2 -O test/shunit2
 
 install: concat
-	cp tmp.sh /usr/local/bin/todo.sh
+	cp build/todo.sh /usr/local/bin/todo.sh
 
 test: concat
 	./test/test.sh
@@ -13,10 +13,10 @@ check:
 	git ls-files *.sh | xargs shellcheck
 
 plugin:
-	./gen_plugins.sh
+	./gen_plugins.sh build plugins.sh
 
 concat: plugin
-	./concat.sh
+	./concat.sh build/todo.sh
 
 clean:
-	rm tmp.sh test/shunit2
+	rm build/todo.sh test/shunit2
