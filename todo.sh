@@ -58,7 +58,7 @@ if command [ "$#" -ge 1 ]; then
             # shellcheck disable=SC2154
             for p in "${plugins[@]}"; do
                 if [ "$subcommand" == "$p" ]; then
-                    $subcommand
+                    $subcommand "$@"
                 fi
             done
             echo "Unknown subcommand"
