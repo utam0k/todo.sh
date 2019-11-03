@@ -2,7 +2,7 @@
 
 function _new () {
     if [ -e "$TARGET_FILE" ]; then
-        echo "Error! Already exit $TARGET_FILE"
+        echo "$(warn) Already exit $TARGET_FILE" >&2
         return 1
     fi
 

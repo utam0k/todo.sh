@@ -8,9 +8,19 @@ function include_subproject() {
     fi
 }
 
+function alert() {
+    printf "\e[31m[Error]\e[m"
+    return 0
+}
+
+function warn() {
+    printf "\e[33m[Warn]\e[m" >&2
+    return 0
+}
+
 function check_is_exit_file() {
     if [ ! -e "$1" ]; then
-        echo "[Error] Not found $1" >&2
+        printf "$(alert) Not found %s\n" "$1" >&2
         exit 1
     fi
 }
