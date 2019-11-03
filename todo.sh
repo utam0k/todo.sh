@@ -1,10 +1,10 @@
 #!/bin/bash
 
-readonly BASE="$HOME/todo"
+readonly BASE_FOLDER=${BASE_FOLDER:-"$HOME/todo"}
 readonly YEAR=$(date +"%Y")
 readonly MONTH=$(date +"%m")
 readonly DAY=$(date +"%d")
-readonly TARGET_FOLDER="$BASE/$YEAR/$MONTH/$DAY"
+readonly TARGET_FOLDER="$BASE_FOLDER/$YEAR/$MONTH/$DAY"
 readonly TARGET_FILE="$TARGET_FOLDER/todo.txt"
 readonly PROJECT_ROW=4
 
