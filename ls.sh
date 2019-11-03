@@ -8,15 +8,18 @@ function _ls () {
         # TODO: -ap
         while IFS='' read -r line; do todos+=("$line"); done < <(sort -k 2 < "$TARGET_FILE")
     else
-        while IFS='' read -r line; do todos+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | sort -k 2)
+        while IFS='' read -r line; do todos+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | sort -k 4,4)
     fi
 
     if [ "$P_FLG" ]; then
         prevParent=""
+        pos=0
         projects=()
         # shellcheck disable=SC2086
         while IFS='' read -r line; do projects+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
+
         for proj in "${projects[@]}"; do
+            remainders=("${todos[@]:$pos}")
             if include_subproject "$proj" > /dev/null; then
                 parent=$(echo "$proj" | cut -d '+' -f 1)
                 sub=$(echo "$proj" | cut -d '+' -f 2)
@@ -26,16 +29,18 @@ function _ls () {
                     echo "$parent"
                 fi
                 echo "  $sub"
-                for t in "${todos[@]}"; do
+                for t in "${remainders[@]}"; do
                     if echo "$t" | grep -e "^-.*$parent+$sub" > /dev/null; then
+                        pos=$((pos + 1))
                         echo "    $t"
                     fi
                 done
             else
                 echo "$proj"
-                for t in "${todos[@]}"; do
+                for t in "${remainders[@]}"; do
                     # shellcheck disable=SC2086
                     if [ "$(echo "$t" | grep -e "^- *" | awk '{ print $'${PROJECT_ROW}' }')" == "$proj" ]; then
+                        pos=$((pos + 1))
                         echo "  $t"
                     fi
                 done
