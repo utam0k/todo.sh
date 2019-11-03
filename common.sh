@@ -7,3 +7,10 @@ function include_subproject() {
         return 1
     fi
 }
+
+function check_is_exit_file() {
+    if [ ! -e "$1" ]; then
+        echo "[Error] Not found $1" >&2
+        exit 1
+    fi
+}

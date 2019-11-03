@@ -1,6 +1,8 @@
 #!/bin/bash
 
 function _ls () {
+    check_is_exit_file "$TARGET_FILE"
+
     todos=()
     if [ "$A_FLG" ]; then
         # TODO: -ap
