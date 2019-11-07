@@ -5,6 +5,12 @@ function tab() {
     return 0
 }
 
+function extract_project() {
+    # shellcheck disable=SC2086
+    echo "$1" | awk '{ print $'${PROJECT_ROW}' }'
+    return 0
+}
+
 function _ls () {
     check_is_exit_file "$TARGET_FILE"
 
@@ -39,7 +45,7 @@ function _ls () {
                 fi
                 output+="$(tab)$sub\n"
                 for t in "${remainders[@]}"; do
-                    if [ "$(echo "$t" | awk '{ print $'${PROJECT_ROW}' }')" == "$parent+$sub" ]; then
+                    if [ "$(extract_project "$t")" == "$parent+$sub" ]; then
                         pos=$((pos + 1))
                         output+="$(tab)$(tab)$t\n"
                     fi
