@@ -54,8 +54,10 @@ function _ls () {
         done
         printf "%b" "$output"
     else
+        len=${#todos[@]}
+        digits=${#len}
         for (( i=0; i<${#todos[@]}; i++ )) do
-            output+="$i ${todos[$i]}\n"
+            output+="$(printf "%0${digits}d %s" "$i" "${todos[$i]}")\n"
         done
         printf "%b" "$output"
     fi
