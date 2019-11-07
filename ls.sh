@@ -5,12 +5,6 @@ function tab() {
     return 0
 }
 
-function extract_project() {
-    # shellcheck disable=SC2086
-    echo "$1" | awk '{ print $'${PROJECT_ROW}' }'
-    return 0
-}
-
 function _ls () {
     check_is_exit_file "$TARGET_FILE"
 
@@ -31,8 +25,8 @@ function _ls () {
         prevParent=""
         pos=0
         projects=()
-        # shellcheck disable=SC2086
-        while IFS='' read -r line; do projects+=("$line"); done < <(printf "%s\n" "${todos[@]}" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
+        while IFS='' read -r line; do projects+=("$line"); done < <(extract_projects "${todos[@]}" | sort | uniq)
+
         for proj in "${projects[@]}"; do
             remainders=("${todos[@]:$pos}")
             if include_subproject "$proj" > /dev/null; then
@@ -54,7 +48,7 @@ function _ls () {
                 output+="$proj\n"
                 for t in "${remainders[@]}"; do
                     # shellcheck disable=SC2086
-                    if [ "$(echo "$t" | awk '{ print $'${PROJECT_ROW}' }')" == "$proj" ]; then
+                    if [ "$(extract_project "$t")" == "$proj" ]; then
                         pos=$((pos + 1))
                         output+="$(tab)$t\n"
                     fi

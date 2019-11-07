@@ -1,0 +1,4 @@
+- (C) 2019-10-03 todo+a todooの改良 
+- (C) 2019-10-03 todo todoの改良 
+- (D) 2019-10-03 todo todoooの改良 
+x (D) 2019-10-03 todo+b todobの改良 

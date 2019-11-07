@@ -24,3 +24,18 @@ function check_is_exit_file() {
         exit 1
     fi
 }
+
+function extract_project() {
+    echo "$1" | awk '{ print $4 }'
+    return $?
+}
+
+function extract_projects() {
+    args=("$@")
+    ret=""
+    for t in "${args[@]}"; do
+        ret+="$(extract_project "$t")\n"
+    done
+    printf "%b" "$ret"
+    return 0
+}
