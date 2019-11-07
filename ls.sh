@@ -11,8 +11,12 @@ function _ls () {
     todos=()
     output=""
     if [ "$A_FLG" ]; then
-        # TODO: -ap
-        while IFS='' read -r line; do todos+=("$line"); done < <(sort -k 2 < "$TARGET_FILE")
+        if [ "$P_FLG" ]; then
+            sort_key="4,4"
+        else
+            sort_key="2"
+        fi
+        while IFS='' read -r line; do todos+=("$line"); done < <(sort -k "$sort_key" < "$TARGET_FILE")
     else
         while IFS='' read -r line; do todos+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | sort -k 4,4)
     fi
@@ -22,7 +26,7 @@ function _ls () {
         pos=0
         projects=()
         # shellcheck disable=SC2086
-        while IFS='' read -r line; do projects+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
+        while IFS='' read -r line; do projects+=("$line"); done < <(printf "%s\n" "${todos[@]}" | awk '{ print $'${PROJECT_ROW}' }' | sort | uniq)
         for proj in "${projects[@]}"; do
             remainders=("${todos[@]:$pos}")
             if include_subproject "$proj" > /dev/null; then
@@ -35,7 +39,7 @@ function _ls () {
                 fi
                 output+="$(tab)$sub\n"
                 for t in "${remainders[@]}"; do
-                    if echo "$t" | grep -e "^-.*$parent+$sub" > /dev/null; then
+                    if [ "$(echo "$t" | awk '{ print $'${PROJECT_ROW}' }')" == "$parent+$sub" ]; then
                         pos=$((pos + 1))
                         output+="$(tab)$(tab)$t\n"
                     fi
@@ -44,7 +48,7 @@ function _ls () {
                 output+="$proj\n"
                 for t in "${remainders[@]}"; do
                     # shellcheck disable=SC2086
-                    if [ "$(echo "$t" | grep -e "^- *" | awk '{ print $'${PROJECT_ROW}' }')" == "$proj" ]; then
+                    if [ "$(echo "$t" | awk '{ print $'${PROJECT_ROW}' }')" == "$proj" ]; then
                         pos=$((pos + 1))
                         output+="$(tab)$t\n"
                     fi
