@@ -10,6 +10,31 @@
  </a>
 </p>
 
+# Overview 
+TBD
+
+# Features
+- simple
+- bash
+- plugin
+
+# TODO format
+Space separated.
+```
+[-|x] YYYY-MM-DD Project+Subproject Description
+```
+- 1 row: whether this todo is over(`-`: yet, `x`: finished).
+- 2 row: start date.
+- 3 row: project of this todo. Subprojects if necessary.
+- 4 row: description of this todo.
+
+e.g.
+```
+- (C) 2019-10-03 todo improve
+- (C) 2019-10-03 todo+usability README
+```
+
+
 # Install
 Execute following command as the *root* user.
 ```
@@ -39,7 +64,7 @@ $ todo.sh ls ${options}
 -a  Show all todos.
 
 ## open
-Open today's todos.
+Open today's todos and you can edit it.
 ```
 $ todo.sh open
 ```
@@ -47,5 +72,5 @@ $ todo.sh open
 
 # Todo Text Example
 ```
-- (C) 2019-10-03 todo todoの改良
+- (C) 2019-10-03 todo improve
 ```
