@@ -5,6 +5,23 @@ function tab() {
     return 0
 }
 
+function search_todos_from_project() {
+    local proj="$1"
+    shift $(( OPTIND - 1 ))
+    local todos=("$@")
+    local index=0
+    local output=""
+    for t in "${todos[@]}"; do
+        if [ "$(extract_project "$t")" == "$proj" ]; then
+            output+="$index "
+        fi
+        index=$((index + 1))
+    done
+
+    printf "%b" "$output"
+    return 0
+}
+
 function _ls () {
     check_is_exit_file "$TARGET_FILE"
 
@@ -22,39 +39,29 @@ function _ls () {
     fi
 
     if [ "$P_FLG" ]; then
-        prevParent=""
+        prev_parent=""
         pos=0
-        projects=()
-        while IFS='' read -r line; do projects+=("$line"); done < <(extract_projects "${todos[@]}" | sort | uniq)
-
+        projects=(); while IFS='' read -r line; do projects+=("$line"); done < <(extract_projects "${todos[@]}" | sort | uniq)
         for proj in "${projects[@]}"; do
             remainders=("${todos[@]:$pos}")
             if include_subproject "$proj" > /dev/null; then
                 parent=$(echo "$proj" | cut -d '+' -f 1)
                 sub=$(echo "$proj" | cut -d '+' -f 2)
-                if [ "$prevParent" == "" ]; then
-                    output+="$parent\n"
-                elif [ "$prevParent" != "$parent" ]; then
+                if [ "$prev_parent" == "" ] || [ "$prev_parent" != "$parent" ]; then
                     output+="$parent\n"
                 fi
                 output+="$(tab)$sub\n"
-                for t in "${remainders[@]}"; do
-                    if [ "$(extract_project "$t")" == "$parent+$sub" ]; then
-                        pos=$((pos + 1))
-                        output+="$(tab)$(tab)$t\n"
-                    fi
-                done
+                indexs=$(search_todos_from_project "$parent+$sub" "${remainders[@]}")
             else
                 output+="$proj\n"
-                for t in "${remainders[@]}"; do
-                    # shellcheck disable=SC2086
-                    if [ "$(extract_project "$t")" == "$proj" ]; then
-                        pos=$((pos + 1))
-                        output+="$(tab)$t\n"
-                    fi
-                done
+                indexs=$(search_todos_from_project "$proj" "${remainders[@]}")
             fi
-            prevParent="$parent"
+            num=$(printf "%s" "$indexs" | wc -w)
+            for index in $indexs; do
+                output+="$(tab)$(tab)${remainders[$index]}\n"
+            done
+            pos=$((pos + num))
+            prev_parent="$parent"
         done
         printf "%b" "$output"
     else
