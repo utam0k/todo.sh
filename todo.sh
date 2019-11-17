@@ -6,7 +6,6 @@ readonly MONTH=$(date +"%m")
 readonly DAY=$(date +"%d")
 readonly TARGET_FOLDER="$BASE_FOLDER/$YEAR/$MONTH/$DAY"
 readonly TARGET_FILE="$TARGET_FOLDER/todo.txt"
-readonly PROJECT_ROW=4
 
 # main subcommands
 source common.sh
