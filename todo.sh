@@ -11,6 +11,7 @@ readonly PROJECT_ROW=4
 # main subcommands
 source common.sh
 source new.sh
+source diff.sh
 source open.sh
 source add.sh
 source memo.sh
@@ -26,6 +27,7 @@ if command [ "$#" -ge 1 ]; then
 
     case $subcommand in
         new) _new ;;
+        diff) _diff ;;
         add)
             if command [ "$#" -eq 3 ]; then
                 _add "$1" "$2" "$3"
