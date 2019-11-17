@@ -3,10 +3,35 @@
 function _diff() {
     check_is_exit_file "$TARGET_FILE"
 
-    prev_year=$(find "$BASE_FOLDER" -maxdepth 1 ! -wholename "$BASE_FOLDER" | sort -nr | head -n1 | tail -n1)
-    prev_month=$(find "$prev_year" -maxdepth 1 ! -wholename "$prev_year" | sort -nr | head -n1 | tail -n1)
-    prev_day=$(find "$prev_month" -maxdepth 1 ! -wholename "$prev_month" | sort -nr | head -n2 | tail -n1)
+    while getopts "y:m:d:" opts
+    do
+        case $opts in
+            y) require_year=$OPTARG ;;
+            m) require_month=$OPTARG ;;
+            d) require_day=$OPTARG ;;
+            *) echo "usage: diff [-y year] [-m month] [-d day]"
+               exit 1 ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    if [ "$require_year" ]; then
+        prev_year="$BASE_FOLDER/$require_year"
+    else
+        prev_year=$(find "$BASE_FOLDER" -maxdepth 1 ! -wholename "$BASE_FOLDER" | sort -nr | head -n1 | tail -n1)
+    fi
+    if [ "$require_month" ]; then
+        prev_month="$prev_year/$require_month"
+    else
+        prev_month=$(find "$prev_year" -maxdepth 1 ! -wholename "$prev_year" | sort -nr | head -n1 | tail -n1)
+    fi
+    if [ "$require_day" ]; then
+        prev_day="$prev_month/$require_day"
+    else
+        prev_day=$(find "$prev_month" -maxdepth 1 ! -wholename "$prev_month" | sort -nr | head -n2 | tail -n1)
+    fi
     prev_target="$prev_day/todo.txt"
+    check_is_exit_file "$prev_target"
 
     todos=()
     prev_todos=()

@@ -27,7 +27,7 @@ if command [ "$#" -ge 1 ]; then
 
     case $subcommand in
         new) _new ;;
-        diff) _diff ;;
+        diff) _diff "$@" ;;
         add)
             if command [ "$#" -eq 3 ]; then
                 _add "$1" "$2" "$3"
