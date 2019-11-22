@@ -23,6 +23,16 @@ function search_todos_from_project() {
 }
 
 function _ls () {
+    while getopts "ap" OPT
+    do
+        case $OPT in
+            p) P_FLG=1 ;;
+            a) A_FLG=1 ;;
+            *) echo "usage: ls [-p] [-a]" >&2
+                exit 1 ;;
+        esac
+    done
+    shift $(( OPTIND - 1 ))
     check_is_exit_file "$TARGET_FILE"
 
     todos=()

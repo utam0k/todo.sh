@@ -42,19 +42,7 @@ if command [ "$#" -ge 1 ]; then
                 _memo "$1"
             fi
             ;;
-        ls)
-            while getopts "ap" OPT
-            do
-                case $OPT in
-                    p) P_FLG=1 ;;
-                    a) A_FLG=1 ;;
-                    *) echo "usage: $subcommand [-p] [-a]" >&2
-                       exit 1 ;;
-                esac
-            done
-            shift $(( OPTIND - 1 ))
-            _ls
-            ;;
+        ls) _ls "$@" ;;
         *)
             # shellcheck disable=SC2154
             for p in "${plugins[@]}"; do
