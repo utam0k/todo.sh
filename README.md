@@ -59,6 +59,12 @@ Show today's todos that haven't ended.
 $ todo.sh ls ${options}
 ```
 
+If you want to see past todos, enter the following command.  
+The number of `^` determine how many will go back in the past.
+```
+$ todo.sh ls ^^
+```
+
 ### Options
 -p  Show todo for each project.  
 -a  Show all todos.
