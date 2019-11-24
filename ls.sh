@@ -32,8 +32,16 @@ function _ls () {
                 exit 1 ;;
         esac
     done
-    shift $(( OPTIND - 1 ))
-    check_is_exit_file "$TARGET_FILE"
+    shift $((OPTIND - 1))
+
+    target_file="${TARGET_FILE:-""}"
+    if [ "$#" -eq 1 ]; then
+        prev_n=$(echo "$1" | tr -cd '^' | wc -c)
+        target_file=$(find "$BASE_FOLDER" -name "todo.txt" | sort -rM | head -n "$prev_n" | tail -n1)
+    fi
+
+    check_is_exit_file "$target_file"
+    printf "FILE: %s\n" "$target_file" >&2
 
     todos=()
     output=""
@@ -43,9 +51,9 @@ function _ls () {
         else
             sort_key="2"
         fi
-        while IFS='' read -r line; do todos+=("$line"); done < <(sort -k "$sort_key" < "$TARGET_FILE")
+        while IFS='' read -r line; do todos+=("$line"); done < <(sort -k "$sort_key" < "$target_file")
     else
-        while IFS='' read -r line; do todos+=("$line"); done < <(grep "$TARGET_FILE" -e "^- *" | sort -k 4,4)
+        while IFS='' read -r line; do todos+=("$line"); done < <(grep "$target_file" -e "^- *" | sort -k 4,4)
     fi
 
     if [ "$P_FLG" ]; then
