@@ -30,9 +30,9 @@ function _diff() {
     end_n=$(echo "$all" | grep -n "$end_target" | awk '{print $1}' | cut -d':' -f 1 | head)
 
     local intersection=() diff=()
-    for i in $(seq $((end_n+1)) $start_n); do
+    for i in $(seq $((end_n+1)) "$start_n"); do
         local before_todos=() after_todos=()
-        before=$(find "$BASE_FOLDER" -name "todo.txt" | sort -rM | head -n$i | tail -n1)
+        before=$(find "$BASE_FOLDER" -name "todo.txt" | sort -rM | head -n"$i" | tail -n1)
         after=$(find "$BASE_FOLDER" -name "todo.txt" | sort -rM | head -n$((i+1)) | tail -n1)
         while IFS='' read -r line; do before_todos+=("$line"); done < <(sort -k 2 < "$before")
         while IFS='' read -r line; do after_todos+=("$line"); done < <(sort -k 2 < "$after")
