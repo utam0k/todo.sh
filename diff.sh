@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 function _diff() {
     local end_target start_date
@@ -24,15 +25,24 @@ function _diff() {
     check_is_exit_file "$end_target"
     printf "%s...%s\n" "$start_date" "$end_date" >&2
 
-    local todos=() start_todos=()
-    while IFS='' read -r line; do todos+=("$line"); done < <(sort -k 2 < "$end_target")
-    while IFS='' read -r line; do start_todos+=("$line"); done < <(sort -k 2 < "$start_target")
+    all=$(find "$BASE_FOLDER" -name "todo.txt" | sort -rM )
+    start_n=$(echo "$all" | grep -n "$start_target" | awk '{print $1}' | cut -d':' -f 1 | head)
+    end_n=$(echo "$all" | grep -n "$end_target" | awk '{print $1}' | cut -d':' -f 1 | head)
 
     local intersection=() diff=()
-    while IFS='' read -r line; do intersection+=("$line"); done < <(for item in "${todos[@]}" "${start_todos[@]}"; do echo "$item"; done | sort | uniq -d)
-    while IFS='' read -r line; do diff+=("$line"); done < <(for item in "${todos[@]}" "${intersection[@]}"; do echo "$item"; done | sort | uniq -u)
+    for i in $(seq $((end_n+1)) $start_n); do
+        local before_todos=() after_todos=()
+        before=$(find "$BASE_FOLDER" -name "todo.txt" | sort -rM | head -n$i | tail -n1)
+        after=$(find "$BASE_FOLDER" -name "todo.txt" | sort -rM | head -n$((i+1)) | tail -n1)
+        while IFS='' read -r line; do before_todos+=("$line"); done < <(sort -k 2 < "$before")
+        while IFS='' read -r line; do after_todos+=("$line"); done < <(sort -k 2 < "$after")
 
-    for t in "${diff[@]}"; do printf "%s\n" "$t"; done
+        intersection=()
+        while IFS='' read -r line; do intersection+=("$line"); done < <(for item in "${before_todos[@]}" "${after_todos[@]}"; do echo "$item"; done | sort | uniq -d)
+        while IFS='' read -r line; do diff+=("$line"); done < <(for item in "${before_todos[@]}" "${intersection[@]}"; do echo "$item"; done | sort | uniq -u)
+    done
+
+    for t in "${diff[@]}"; do printf "%s\n" "$t"; done | sort -k 4 | uniq
 
     return 0
 }
