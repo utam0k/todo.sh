@@ -3,7 +3,7 @@
 source common.sh
 
 function _add() {
-    if command [ "$#" -ne 3 ]; then
+    if [ "$#" -ne 3 ]; then
         return 1
     fi
 
@@ -11,4 +11,3 @@ function _add() {
     echo "- ($1) $(date +"%Y-%m-%d") $2 $3" >> "$TARGET_FILE"
     return 0
 }
-
