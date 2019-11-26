@@ -8,7 +8,7 @@ function _add() {
     fi
 
     # TODO: Define format function and tests.
-    echo "- ($1) $(date +"%Y-%m-%d") $2 $3" >> "TARGET_FILE"
+    echo "- ($1) $(date +"%Y-%m-%d") $2 $3" >> "$TARGET_FILE"
     return 0
 }
 
